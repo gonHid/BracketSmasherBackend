@@ -1,0 +1,6 @@
+@BracketSmasherBackend_HostAddress = http://localhost:5016
+
+GET {{BracketSmasherBackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

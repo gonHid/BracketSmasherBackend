@@ -4,7 +4,8 @@ using BracketSmasherBackend.Services;
 using BracketSmasherBackend.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://*:{port}");
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowMobileApp", policy =>
@@ -41,11 +42,8 @@ var app = builder.Build();
 
 app.UseCors("AllowMobileApp");
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 //app.UseHttpsRedirection();
 
@@ -53,7 +51,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<MatchHub>("/matchHub");
-Console.WriteLine(
-    builder.Configuration.GetConnectionString("Default")
-);
+app.MapGet("/health", () => Results.Ok("OK"));
 app.Run();

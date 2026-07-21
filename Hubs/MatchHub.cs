@@ -58,6 +58,10 @@ public class MatchHub : Hub
         if (playerId == match.Player2Id)
             match.Player2Connected = true;
 
+        Console.WriteLine(
+            $"JoinMatch set={setId} player={playerId} conn={Context.ConnectionId}"
+        );
+
         if (match.Player1Connected &&
             match.Player2Connected)
         {
@@ -364,5 +368,16 @@ Mensaje automático de BracketSmasher.
             setId,
             out _
         );
+    }
+    public override async Task OnConnectedAsync()
+    {
+        Console.WriteLine($"SignalR conectado: {Context.ConnectionId}");
+        await base.OnConnectedAsync();
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        Console.WriteLine($"SignalR desconectado: {Context.ConnectionId}");
+        await base.OnDisconnectedAsync(exception);
     }
 }

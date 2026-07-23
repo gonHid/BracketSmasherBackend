@@ -1,7 +1,8 @@
 using BracketSmasherBackend.Data;
-using Microsoft.EntityFrameworkCore;
-using BracketSmasherBackend.Services;
 using BracketSmasherBackend.Hubs;
+using BracketSmasherBackend.Services;
+using Microsoft.EntityFrameworkCore;
+using Resend;
 
 var builder = WebApplication.CreateBuilder(args);
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
@@ -28,6 +29,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("Default")
     ));
+builder.Services.AddResend(options =>
+{
+    options.ApiToken = builder.Configuration["RESEND_API_KEY"];
+});
 builder.Services.AddSignalR();
 builder.Services.AddHttpClient();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

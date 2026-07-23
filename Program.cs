@@ -52,4 +52,21 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<MatchHub>("/matchHub");
 app.MapGet("/health", () => Results.Ok("OK"));
+app.MapGet("/test-email", async (EmailService email) =>
+{
+    try
+    {
+        await email.SendEmailAsync(
+            "gon.hidalgo.ch@gmail.com",
+            "Prueba",
+            "Hola desde Render"
+        );
+
+        return Results.Ok("Correo enviado");
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.ToString());
+    }
+});
 app.Run();

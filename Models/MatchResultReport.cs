@@ -7,7 +7,7 @@ public class MatchResultReport
 {
     public long Id { get; set; }
 
-    public long SetId { get; set; }
+    public string SetId { get; set; } = string.Empty;
     public Guid MatchSessionId { get; set; }
 
     public MatchSession MatchSession { get; set; } = null!;

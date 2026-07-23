@@ -20,7 +20,7 @@ public class MatchService
     public async Task<MatchSession> GetOrCreateAsync(
         long tournamentId,
         long eventId,
-        long setId,
+        string setId,
         DateTime tournamentStartAt,
         long player1Id,
         long player2Id)
@@ -65,7 +65,7 @@ public class MatchService
 
 
 
-    public async Task<MatchSession?> GetBySetIdAsync(long setId)
+    public async Task<MatchSession?> GetBySetIdAsync(string setId)
     {
         return await _db.MatchSessions
             .FirstOrDefaultAsync(
@@ -96,7 +96,7 @@ public class MatchService
         GetResultReportsAsync(long setId)
     {
         return await _db.MatchResultReports
-            .Where(x => x.SetId == setId)
+            .Where(x => x.SetId.Equals(setId))
             .OrderBy(x => x.CreatedAt)
             .ToListAsync();
     }
@@ -107,7 +107,7 @@ public class MatchService
     {
         var reports =
             await _db.MatchResultReports
-            .Where(x => x.SetId == setId)
+            .Where(x => x.SetId.Equals(setId))
             .ToListAsync();
 
 

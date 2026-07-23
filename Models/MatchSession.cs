@@ -13,7 +13,7 @@ public class MatchSession
 
     public long EventId { get; set; }
 
-    public long SetId { get; set; }
+    public string SetId { get; set; } = string.Empty;
 
     // Jugadores
     public long Player1Id { get; set; }

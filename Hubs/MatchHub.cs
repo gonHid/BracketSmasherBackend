@@ -12,8 +12,8 @@ public class MatchHub : Hub
     private readonly StartGgService _startGg;
     private readonly EmailService _email;
 
-    private static readonly ConcurrentDictionary<long, List<MatchResultReport>> _pendingReports = new();
-    private static readonly ConcurrentDictionary<long, DateTime> _lastConflictNotification = new();
+    private static readonly ConcurrentDictionary<string, List<MatchResultReport>> _pendingReports = new();
+    private static readonly ConcurrentDictionary<string, DateTime> _lastConflictNotification = new();
 
     public MatchHub(
         MatchService matches,
@@ -28,7 +28,7 @@ public class MatchHub : Hub
     public async Task JoinMatch(
         long tournamentId,
         long eventId,
-        long setId,
+        string setId,
         long tournamentStartAt,
         long playerId,
         long player1Id,
@@ -36,7 +36,7 @@ public class MatchHub : Hub
     {
         await Groups.AddToGroupAsync(
             Context.ConnectionId,
-            setId.ToString()
+            setId
         );
 
         var tournamentStartDate =
@@ -67,14 +67,14 @@ public class MatchHub : Hub
         {
             match.Phase = MatchPhases.ReadyForCoinFlip;
 
-            await Clients.Group(setId.ToString())
+            await Clients.Group(setId)
                 .SendAsync(
                     MatchPhases.BothPlayersConnected
                 );
         }
         else
         {
-            await Clients.Group(setId.ToString())
+            await Clients.Group(setId)
                 .SendAsync(
                     MatchPhases.WaitingForPlayers
                 );
@@ -91,7 +91,7 @@ public class MatchHub : Hub
         );
     }
 
-    public async Task FlipCoin(long setId)
+    public async Task FlipCoin(string setId)
     {
         var match =
             await _matches.GetBySetIdAsync(setId);
@@ -116,7 +116,7 @@ public class MatchHub : Hub
 
         await _matches.SaveAsync();
 
-        await Clients.Group(setId.ToString())
+        await Clients.Group(setId)
             .SendAsync(
                 MatchPhases.CoinResult,
                 winner,
@@ -125,7 +125,7 @@ public class MatchHub : Hub
     }
 
     public async Task SetStageState(
-        long setId,
+        string setId,
         int stageId,
         string state,
         long playerId)
@@ -143,7 +143,7 @@ public class MatchHub : Hub
             playerId
         );
 
-        await Clients.Group(setId.ToString())
+        await Clients.Group(setId)
             .SendAsync(
                 "StageStateUpdated",
                 stageId,
@@ -152,7 +152,7 @@ public class MatchHub : Hub
             );
     }
 
-    public async Task ResetStages(long setId)
+    public async Task ResetStages(string setId)
     {
         var match =
             await _matches.GetBySetIdAsync(setId);
@@ -169,7 +169,7 @@ public class MatchHub : Hub
     }
 
     public async Task SubmitResult(
-        long setId,
+        string setId,
         long reporterId,
         long winnerPlayerId,
         string winnerTag,
